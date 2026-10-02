@@ -1,6 +1,7 @@
 """사용법:
 
     python -m tvlab --csv BINANCE_BTCUSDT_1D.csv
+    python -m tvlab --krx 005930                # FinanceDataReader (무료)
     python -m tvlab --ticker 005930.KS          # yfinance 설치 시
     python -m tvlab --demo                      # 합성 데이터 (파이프라인 확인용)
 """
@@ -17,6 +18,7 @@ def main() -> None:
     ap = argparse.ArgumentParser(prog="tvlab")
     g = ap.add_mutually_exclusive_group(required=True)
     g.add_argument("--csv", help="TradingView 'Export chart data' CSV")
+    g.add_argument("--krx", help="FinanceDataReader 종목코드 (예: 005930, KS11, AAPL)")
     g.add_argument("--ticker", help="yfinance 티커 (예: SPY, 005930.KS)")
     g.add_argument("--demo", action="store_true", help="합성 랜덤워크 데이터")
     ap.add_argument("--horizons", default="5,10,20")
@@ -26,6 +28,7 @@ def main() -> None:
     a = ap.parse_args()
 
     df = (data.load_tradingview_csv(a.csv) if a.csv
+          else data.load_fdr(a.krx) if a.krx
           else data.load_yfinance(a.ticker) if a.ticker else data.synthetic())
     hs = tuple(int(x) for x in a.horizons.split(","))
     print(f"bars={len(df)}  {df.index[0]} → {df.index[-1]}")

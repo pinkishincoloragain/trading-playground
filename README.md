@@ -9,14 +9,17 @@ TradingView 지표를 **소수점까지 똑같이 재현**하고, 각 지표의 
 
 ```bash
 pip install -r requirements.txt          # pandas numpy scipy scikit-learn pytest
-pip install yfinance                     # (선택) 티커로 바로 받기
+pip install finance-datareader           # (선택) 국내 종목 무료 시세
+pip install yfinance                     # (선택) 해외 티커
 ```
 
 ## 워크플로
 
-### 1단계 — TradingView 데이터 내보내기
-차트에 원하는 지표를 켜고 **⋯ → Export chart data** 로 CSV 를 받는다.
-가격과 켜진 모든 플롯(`plot_0` …)이 함께 나온다. 일봉 기준 최소 5~10년 권장.
+### 1단계 — 데이터 받기
+* **무료**: `python -m tvlab --krx 005930` (FinanceDataReader). 지표는 tvlab 이 Pine 과
+  같은 규칙으로 직접 계산하므로 TradingView 내보내기가 없어도 분석은 그대로 된다.
+* **TradingView 유료 플랜**: 차트 **⋯ → Export chart data** 로 가격과 켜진 모든 플롯을
+  CSV 로 받을 수 있다. 커스텀 지표의 수식을 소수점까지 대조할 때만 필요하다.
 
 ### 2단계 — 지표 수식 확인 (커스텀 지표 역추적)
 ```python
@@ -30,7 +33,7 @@ fit.is_donchian(df, df["Upper"])                            # 돈치안이면 �
 ### 3단계 — 신호 승률표
 ```bash
 python -m tvlab --csv KRX_005930_1D.csv --horizons 5,10,20 --out result.csv
-python -m tvlab --ticker SPY --model     # 워크포워드 확률 모델까지
+python -m tvlab --krx 005930 --model     # 무료 국내 시세 + 워크포워드 확률 모델
 python -m tvlab --demo                   # 합성 데이터로 파이프라인 확인
 ```
 
